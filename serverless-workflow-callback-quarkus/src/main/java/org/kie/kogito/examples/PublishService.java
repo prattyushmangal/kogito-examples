@@ -56,7 +56,14 @@ public class PublishService {
     }
 
     public void publishMove(JsonNode workflowData) {
-        kafkaClient.produce(generateCloudEvent(workflowData.get("eventId").asText()), "move");
+        System.out.println(workflowData);
+        // GET JAVA TO SLEEP BEFORE RUNNING THE CLOUD EVENT
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        // kafkaClient.produce(generateCloudEvent(workflowData.get("eventId").asText()), "move");
     }
 
     private String generateCloudEvent(String id) {
