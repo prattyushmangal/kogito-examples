@@ -31,7 +31,7 @@ import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+// import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cloudevents.core.builder.CloudEventBuilder;
@@ -55,7 +55,8 @@ public class PublishService {
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
     }
 
-    public void publishMove(JsonNode workflowData) {
+    // public void publishMove(JsonNode workflowData) {
+    public void publishMove(String workflowData) {
         System.out.println(workflowData);
         // GET JAVA TO SLEEP BEFORE RUNNING THE CLOUD EVENT
         try {

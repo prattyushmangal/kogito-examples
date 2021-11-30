@@ -41,6 +41,8 @@ states:
     name: publishAction
     functionRef:
       refName: publishMove
+      arguments:
+        workflowData: $.eventId
   eventRef: moveEvent
   transition: finish
 - name: finish
