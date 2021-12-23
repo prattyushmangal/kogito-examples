@@ -1,0 +1,46 @@
+id: workflowB
+version: '1.0'
+name: Workflow B
+description: Workflow that is triggered upon event reception and uses event data. Produces event. 
+start: triggerEvent
+events:
+- name: triggerEventB
+  source: ''
+  type: eventB
+- name: produceEventB
+  source: ''
+  type: produceB
+  kind: produced
+functions:
+- name: printMessage
+  metadata:
+    type: sysout
+states:
+- name: triggerEvent
+  type: event
+  onEvents:
+  - eventRefs:
+    - triggerEventB
+    actions: []
+  transition: hello
+- name: hello
+  type: inject
+  data:
+    result: Hello World FROM B!
+  transition: hello2
+- name: hello2
+  type: inject
+  data:
+    fromB: Im in B PM
+  transition: finish
+- name: finish
+  type: operation
+  actions:
+    - name: printAction
+      functionRef:
+        refName: printMessage
+        arguments:
+          message: ".fromB"
+  end: 
+    produceEvents:
+    - eventRef: produceEventB

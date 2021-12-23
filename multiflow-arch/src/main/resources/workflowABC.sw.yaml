@@ -1,0 +1,179 @@
+id: workflowe2e
+version: '1.0'
+name: Workflow ABC
+description: Workflow that is triggered upon event reception and produces events to trigger smaller workflows
+start: triggerEvent
+events:
+
+- name: triggerEventABC
+  source: ''
+  type: eventABC
+
+- name: producedByABC
+  source: ''
+  type: produceABC
+  kind: produced
+
+- name: triggerA
+  source: ''
+  type: eventA
+  kind: produced
+
+- name: produceFromA
+  source: ''
+  type: produceA
+
+- name: triggerB
+  source: ''
+  type: eventB
+  kind: produced
+  
+- name: produceFromB
+  source: ''
+  type: produceB
+
+- name: triggerC
+  source: ''
+  type: eventC
+  kind: produced
+  
+- name: produceFromC
+  source: ''
+  type: produceC
+
+functions:
+- name: printMessage
+  metadata:
+    type: sysout
+states:
+- name: triggerEvent
+  type: event
+  onEvents:
+  - eventRefs:
+    - triggerEventABC
+    actions: []
+  transition: hello
+- name: hello
+  type: inject
+  data:
+    result: Hello World from E2E!
+  transition: hello2
+- name: hello2
+  type: inject
+  data:
+    constant: Im Constant PM in E2E
+  transition: triggerFlowA
+#################################
+- name: triggerFlowA
+  type: operation
+  actions:
+    - name: printAction
+      functionRef:
+        refName: printMessage
+        arguments:
+          message: ".result"
+  transition: 
+    produceEvents:
+    - eventRef: triggerA
+    nextState: awaitA
+    # nextState: printA
+# Await A should wait for the Event which is produced by WF A before proceeding
+# Blocked behind Issues:
+# 
+#
+# - name: awaitA
+#   type: event
+#   onEvents:
+#   - eventRefs:
+#     - producedFromA
+#     actions: []
+#   transition: printA
+# - name: awaitA
+#   type: delay
+#   timeDelay: PT15S
+#   transition: printA
+- name: awaitA
+  type: callback
+  action:
+    name: awaitAction
+    functionRef:
+      refName: printMessage
+      arguments:
+        message: ".constant"
+  eventRef: produceFromA
+  transition: printA
+- name: printA
+  type: operation
+  actions:
+    - name: printAction
+      functionRef:
+        refName: printMessage
+        arguments:
+          message: ".result"
+  transition: triggerFlowB
+#################################
+- name: triggerFlowB
+  type: operation
+  actions:
+    - name: printAction
+      functionRef:
+        refName: printMessage
+        arguments:
+          message: ".constant"
+  transition: 
+    produceEvents:
+    - eventRef: triggerB
+    nextState: awaitB
+- name: awaitB
+  type: callback
+  action:
+    name: awaitAction
+    functionRef:
+      refName: printMessage
+      arguments:
+        message: ".constant"
+  eventRef: produceFromB
+  transition: printB
+- name: printB
+  type: operation
+  actions:
+    - name: printAction
+      functionRef:
+        refName: printMessage
+        arguments:
+          message: ".result"
+  transition: triggerFlowC
+#################################
+- name: triggerFlowC
+  type: operation
+  actions:
+    - name: printAction
+      functionRef:
+        refName: printMessage
+        arguments:
+          message: ".constant"
+  transition: 
+    produceEvents:
+    - eventRef: triggerC
+    nextState: awaitC
+- name: awaitC
+  type: callback
+  action:
+    name: awaitAction
+    functionRef:
+      refName: printMessage
+      arguments:
+        message: ".constant"
+  eventRef: produceFromC
+  transition: printC
+- name: printC
+  type: operation
+  actions:
+    - name: printAction
+      functionRef:
+        refName: printMessage
+        arguments:
+          message: ".result"
+  end:
+    produceEvents:
+    - eventRef: producedByABC

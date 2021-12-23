@@ -1,0 +1,46 @@
+id: workflowC
+version: '1.0'
+name: Workflow C
+description: Workflow that is triggered upon event reception and uses event data. Produces event. 
+start: triggerEvent
+events:
+- name: triggerEventC
+  source: ''
+  type: eventC
+- name: produceEventC
+  source: ''
+  type: produceC
+  kind: produced
+functions:
+- name: printMessage
+  metadata:
+    type: sysout
+states:
+- name: triggerEvent
+  type: event
+  onEvents:
+  - eventRefs:
+    - triggerEventC
+    actions: []
+  transition: hello
+- name: hello
+  type: inject
+  data:
+    result: Hello World FROM C!
+  transition: hello2
+- name: hello2
+  type: inject
+  data:
+    fromC: Im in C PM
+  transition: finish
+- name: finish
+  type: operation
+  actions:
+    - name: printAction
+      functionRef:
+        refName: printMessage
+        arguments:
+          message: ".fromC"
+  end: 
+    produceEvents:
+    - eventRef: produceEventC
